@@ -7,4 +7,4 @@ caminho_imagem = "Informação_ultra_confidencial.jpg"
 imagem = Image.open(caminho_imagem)
 
 # Mostrar a imagem
-imagem.display() # Errado de proposito
+imagem.show() # Errado de proposito
