@@ -1,0 +1,43 @@
+
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: 
+
+permissions:
+  contents: write 
+
+jobs:
+  versioning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0      
+          fetch-tags: true
+
+      - name: Calculate version (SemVer automático)
+        id: semver
+        uses: bitshifted/git-auto-semver@v2
+        with:
+          create_tag: true
+          tag_prefix: 'v'
+      
+      - name: Exibir versão calculada
+        run: |
+          echo "Nova versão: ${{ steps.semver.outputs.version-string }}"
+
+      - name: Criar release no GitHub
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.semver.outputs.version-string }}
+          name: Release ${{ steps.semver.outputs.version-string }}
+          body: |
+            Mudanças desde última versão:  
+            ${{ steps.semver.outputs.changelog }}  # se estiver disponível via action
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
